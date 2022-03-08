@@ -144,6 +144,15 @@ def get_explorer_url_for_token(network: str, contract_address, sequence_number: 
         raise NotImplementedError(f"Exploration of the {network} network is not supported")
 
 
+def is_token_url_supported(network: str) -> bool:
+    # Give callers some guidance that calling `get_explorer_url_for_token()` won't be as desriable as they might have
+    # hoped for.
+    if network in {Network.BITCOIN_CASH, Network.TEZOS}:
+        return False
+    else:
+        return True
+
+
 @validated_url
 def get_explorer_url_for_transaction(network: str, transaction_hash: str, base_path: Optional[str] = None) -> str:
     # A blockchain transaction, eg the sending of funds or tokens 🕊
