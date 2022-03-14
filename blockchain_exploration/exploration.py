@@ -97,11 +97,7 @@ def get_explorer_url_for_token_wallet(network: str, address: str, base_path: Opt
 def get_explorer_url_for_nft_contract(network: str, contract_address, base_path: Optional[str] = None) -> str:
     # A central overview of an NFT contract, hopefully focusing on tokens rather than blockchain implementation details
     base_path = (base_path or get_base_path(network)).rstrip('/')
-    contract_address = contract_address.strip(whitespace)
-    if network == Network.BITCOIN_CASH:
-        # https://simpleledger.info/token/62b2b7bdadbf17685bbdb1827adcec17928baab26cf7d96e3cc27855f741fe63
-        return f"{base_path}/token/{contract_address}"
-    elif is_evm_network(network):
+    if is_evm_network(network):
         if base_path.endswith('/opensea.io'):
             # https://opensea.io/assets?search[query]=0xc4df6018f90f91bad7e24f89279305715b3a276f
             # If we went to https://opensea.io/0xc4df6018f90f91bad7e24f89279305715b3a276f, they'd show us the tokens
@@ -115,30 +111,32 @@ def get_explorer_url_for_nft_contract(network: str, contract_address, base_path:
         # https://tzkt.io/KT1RFncfJGBN9heZuDGW5vJPYpMKeYcLeZuo/storage/
         return get_explorer_url_for_account(network=network, address=contract_address, base_path=base_path)
     else:
-        raise NotImplementedError(f"Exploration of the {network} network is not supported")
+        raise NotImplementedError(f"Exploration of the {network} network by contract is not supported")
 
 
 @validated_url
-def get_explorer_url_for_token(network: str, contract_address, sequence_number: int,
+def get_explorer_url_for_token(network: str,
+                               address: str,
+                               token_id: Optional[str],
                                base_path: Optional[str] = None) -> str:
     # An individual token 🪙
+    # address can be either for a token (BCH) or a contract (EVM, or Tezos)
     base_path = (base_path or get_base_path(network)).rstrip('/')
-    contract_address = contract_address.strip(whitespace)
     if network == Network.BITCOIN_CASH:
-        # Tokens don't really exist within a contract / group, like they do on other networks
-        return get_explorer_url_for_nft_contract(network=network, contract_address=contract_address)
+        # https://simpleledger.info/token/62b2b7bdadbf17685bbdb1827adcec17928baab26cf7d96e3cc27855f741fe63
+        return f"{base_path}/token/{address}"
     elif is_evm_network(network):
         if base_path.endswith('/opensea.io'):
             # https://opensea.io/assets/0xc4df6018f90f91bad7e24f89279305715b3a276f/1288
-            return get_explorer_url_for_nft_contract(network=network, contract_address=contract_address,
+            return get_explorer_url_for_nft_contract(network=network, contract_address=address,
                                                      base_path=base_path)
         else:
             # https://polygonscan.com/token/0x3011810abfec25777a01d5fbef08b2ad12860460?a=3191
-            return f"{base_path}/token/{contract_address}/?a={int(sequence_number)}"
+            return f"{base_path}/token/{address}/?a={token_id}"
     elif network == Network.TEZOS:
         # https://tzkt.io/KT1LHqbTKHKRtTzQAF4Z8KGa1xixQ2266S4w/operations/
         # https://better-call.dev/mainnet/KT1LHqbTKHKRtTzQAF4Z8KGa1xixQ2266S4w/tokens
-        return get_explorer_url_for_nft_contract(network=network, contract_address=contract_address,
+        return get_explorer_url_for_nft_contract(network=network, contract_address=address,
                                                  base_path=base_path)
     else:
         raise NotImplementedError(f"Exploration of the {network} network is not supported")
