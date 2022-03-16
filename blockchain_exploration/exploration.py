@@ -97,7 +97,10 @@ def get_explorer_url_for_token_wallet(network: str, address: str, base_path: Opt
 def get_explorer_url_for_nft_contract(network: str, contract_address, base_path: Optional[str] = None) -> str:
     # A central overview of an NFT contract, hopefully focusing on tokens rather than blockchain implementation details
     base_path = (base_path or get_base_path(network)).rstrip('/')
-    if is_evm_network(network):
+    if network == Network.BITCOIN_CASH:
+        # https://simpleledger.info/token/62b2b7bdadbf17685bbdb1827adcec17928baab26cf7d96e3cc27855f741fe63
+        return f"{base_path}/token/{contract_address}"
+    elif is_evm_network(network):
         if base_path.endswith('/opensea.io'):
             # https://opensea.io/assets?search[query]=0xc4df6018f90f91bad7e24f89279305715b3a276f
             # If we went to https://opensea.io/0xc4df6018f90f91bad7e24f89279305715b3a276f, they'd show us the tokens
