@@ -1,3 +1,5 @@
+# DO NOT USE THESE FOR SWEET.IO INTERNAL NETWORK REFERENCES, THESE
+# ARE ONLY RELEVANT TO THIS PACKAGE.
 class Network:
     BITCOIN_CASH = "bitcoin-cash"  # https://bitcoincash.org/
     ETHEREUM = "ethereum"  # http://ethereum.org/
