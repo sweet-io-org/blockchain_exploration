@@ -18,13 +18,15 @@ def get_base_path(network: str) -> str:
         result = os.getenv('SLP_EXPLORER_BASEPATH',
                          os.getenv('EXPLORER_BASEPATH', 'https://simpleledger.info'))
     elif network == Network.ETHEREUM:
-        result = os.getenv('ETH_EXPLORER_BASEPATH', 'https://etherscan.io/')
-    elif network == Network.POLYGON:
+        result = os.getenv('ETH_EXPLORER_BASEPATH', 'https://etherscan.io')
+    elif network == Network.MATIC:
         # Could also be https://opensea.io/assets/matic sometimes
-        result = os.getenv('MATIC_EXPLORER_BASEPATH', 'https://polygonscan.com/')
+        result = os.getenv('MATIC_EXPLORER_BASEPATH', 'https://polygonscan.com')
     elif network == Network.TEZOS:
         # Could also be https://better-call.dev/
-        result = os.getenv('TEZOS_EXPLORER_BASEPATH', 'https://tzkt.io/')
+        result = os.getenv('TEZOS_EXPLORER_BASEPATH', 'https://tzkt.io')
+    elif network == Network.SUI:
+        result = os.getenv('SUI_EXPLORER_BASEPATH', 'https://suiscan.xyz/mainnet')
     else:
         raise NotImplementedError(f"Exploration of the {network} network is not supported")
     return result.rstrip('/')
@@ -37,9 +39,9 @@ def get_validated_url(url: str) -> str:
     return url.strip(whitespace)
 
 
-def validated_url(naïve_func):
+def validated_url(naive_func):
     def validated_func(*args, **kwargs):
-        result = naïve_func(*args, **kwargs)
+        result = naive_func(*args, **kwargs)
         if result:
             return get_validated_url(url=result)
         else:
@@ -67,6 +69,8 @@ def get_explorer_url_for_account(network: str, address: str, base_path: Optional
         # https://better-call.dev/mainnet/tz1imqR4V7ehxPeUrewsg6oy7tAPLsDBscTV/operations
         # https://tzkt.io/tz1fRXMLR27hWoD49tdtKunHyfy3CQb5XZst/operations/
         return f"{base_path}/{address}/operations/"
+    elif network == Network.SUI:
+        return f"{base_path}/account/{address}"
     else:
         raise NotImplementedError(f"No explorer URL can be constructed for {network} addresses")
 
@@ -89,6 +93,8 @@ def get_explorer_url_for_token_wallet(network: str, address: str, base_path: Opt
     elif network == Network.TEZOS:
         # https://tzkt.io/tz1ZMZddhgxqBMMB5KwSr6L5PDJFQf2nNwbK/tokens
         return f"{base_path}/{address}/tokens"
+    elif network == Network.SUI:
+        return f"{base_path}/not-implemented/"
     else:
         raise NotImplementedError(f"No explorer URL can be constructed for {network} addresses")
 
@@ -113,6 +119,8 @@ def get_explorer_url_for_nft_contract(network: str, contract_address, base_path:
     elif network == Network.TEZOS:
         # https://tzkt.io/KT1RFncfJGBN9heZuDGW5vJPYpMKeYcLeZuo/storage/
         return get_explorer_url_for_account(network=network, address=contract_address, base_path=base_path)
+    elif network == Network.SUI:
+        return f"{base_path}/collection/{contract_address}/items"
     else:
         raise NotImplementedError(f"Exploration of the {network} network by contract is not supported")
 
@@ -141,6 +149,9 @@ def get_explorer_url_for_token(network: str,
         # https://better-call.dev/mainnet/KT1LHqbTKHKRtTzQAF4Z8KGa1xixQ2266S4w/tokens
         return get_explorer_url_for_nft_contract(network=network, contract_address=address,
                                                  base_path=base_path)
+    elif network == Network.SUI:
+        # token_id => object_id
+        return f"{base_path}/object/{token_id}"
     else:
         raise NotImplementedError(f"Exploration of the {network} network is not supported")
 
@@ -179,5 +190,7 @@ def get_explorer_url_for_transaction(network: str, transaction_hash: str, base_p
         else:
             # https://tzkt.io/ooZ2UVPNprv9GfMCwp6JgpUD54G668xrgnkPR2DRCZokfNChDrS
             return f"{base_path}/{transaction_hash}"
+    elif network == Network.SUI:
+        return f"{base_path}/tx/{transaction_hash}"
     else:
         raise NotImplementedError(f"Exploration of the {network} network is not supported")

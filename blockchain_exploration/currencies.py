@@ -1,4 +1,4 @@
-from typing import DefaultDict, Dict
+from typing import DefaultDict, Dict, Any
 
 from blockchain_exploration.types import Network
 
@@ -12,7 +12,7 @@ class CryptoCurrency(DefaultDict):
 
 # Supported ISO-style currency codes used for payment tracking.
 # This aligns with for example https://coinmarketcap.com/all/views/all/
-NETWORK_CURRENCIES: Dict[str, Dict[str, CryptoCurrency]] = {
+NETWORK_CURRENCIES: Dict[Any, Dict[str, CryptoCurrency]] = {
     Network.BITCOIN_CASH: {
         "bch": {
             "symbol": "₿",
@@ -45,4 +45,12 @@ NETWORK_CURRENCIES: Dict[str, Dict[str, CryptoCurrency]] = {
             "display_text": "ether",
         }
     },
+    Network.SUI: {
+        "sui": {
+            "symbol": "SUI",
+            "code": "sui",
+            "native_token": True,
+            "display_text": "sui",
+        }
+    }
 }
