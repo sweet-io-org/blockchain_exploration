@@ -8,6 +8,14 @@ class Network:
     SUI = "sui"
 
 
+class TokenType:
+    SLP = "slp"
+    ERC721_ETH = "erc721-eth"
+    ERC721_MATIC = "erc721-matic"
+    TEZOS = "tezos"
+    SUI = "sui"
+
+
 def is_evm_network(network: str) -> bool:
     return network in {Network.ETHEREUM, Network.MATIC}
 
