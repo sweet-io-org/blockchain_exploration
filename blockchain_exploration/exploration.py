@@ -4,7 +4,7 @@ from string import whitespace
 from typing import Optional
 from urllib.parse import urlparse
 
-from .types import Network, is_evm_network
+from .types import Network, TokenType, is_evm_network
 
 LOGGER = logging.getLogger()
 
@@ -194,3 +194,33 @@ def get_explorer_url_for_transaction(network: str, transaction_hash: str, base_p
         return f"{base_path}/tx/{transaction_hash}"
     else:
         raise NotImplementedError(f"Exploration of the {network} network is not supported")
+
+
+def get_token_type_by_network(network: str) -> str:
+    if network == Network.SUI:
+        return TokenType.SUI
+    elif network == Network.MATIC:
+        return TokenType.ERC721_MATIC
+    elif network == Network.ETHEREUM:
+        return TokenType.ERC721_ETH
+    elif network == Network.TEZOS:
+        return TokenType.TEZOS
+    elif network == Network.BITCOIN_CASH:
+        return TokenType.SLP
+    else:
+        raise NotImplementedError(f"No token type known for {network}")
+
+
+def get_network_by_token_type(token_type: str) -> str:
+    if token_type == TokenType.SUI:
+        return Network.SUI
+    elif token_type == TokenType.ERC721_MATIC:
+        return Network.MATIC
+    elif token_type == TokenType.ERC721_ETH:
+        return Network.ETHEREUM
+    elif token_type == TokenType.TEZOS:
+        return Network.TEZOS
+    elif token_type == TokenType.SLP:
+        return Network.BITCOIN_CASH
+    else:
+        raise NotImplementedError(f"No network known for {token_type}")
