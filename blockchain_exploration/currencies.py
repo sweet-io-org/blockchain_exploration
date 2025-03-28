@@ -1,4 +1,4 @@
-from typing import DefaultDict, Dict, Any
+from typing import Any, DefaultDict, Dict
 
 from blockchain_exploration.types import Network
 
@@ -22,12 +22,7 @@ NETWORK_CURRENCIES: Dict[Any, Dict[str, CryptoCurrency]] = {
         }
     },
     Network.TEZOS: {
-        "xtz": {
-            "symbol": "ꜩ",
-            "code": "xtz",
-            "native_token": True,
-            "display_text": "ꜩ"
-        }
+        "xtz": {"symbol": "ꜩ", "code": "xtz", "native_token": True, "display_text": "ꜩ"}
     },
     Network.MATIC: {
         "matic": {
@@ -61,10 +56,10 @@ NETWORK_CURRENCIES: Dict[Any, Dict[str, CryptoCurrency]] = {
             "display_text": "ton",
         },
         "scor": {
-            "symbol": "SCOR",
+            "symbol": "$SCOR",
             "code": "scor",
             "native_token": False,
             "display_text": "scor",
-        }
-    }
+        },
+    },
 }

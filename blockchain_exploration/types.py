@@ -5,8 +5,8 @@ class Network:
     ETHEREUM = "ethereum"  # http://ethereum.org/
     MATIC = "matic"  # https://polygon.technology/
     TEZOS = "tezos"  # https://tezos.com/
-    SUI = "sui" # https://sui.io/
-    TON = "ton" # https://ton.org/
+    SUI = "sui"  # https://sui.io/
+    TON = "ton"  # https://ton.org/
 
 
 class TokenType:
@@ -16,7 +16,7 @@ class TokenType:
     TEZOS = "tezos"
     SUI = "sui"
     TON = "ton"
-    SCOR = "scor"   # TON jetton not nft
+    SCOR = "scor"  # TON jetton not nft
 
 
 def is_evm_network(network: str) -> bool:

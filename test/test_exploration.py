@@ -7,16 +7,19 @@ from typing import Optional
 from urllib.parse import urlparse
 
 import requests
-from blockchain_exploration.exploration import (
-    get_explorer_url_for_account, get_explorer_url_for_nft_contract,
-    get_explorer_url_for_token)
-from blockchain_exploration.types import Network, get_label_for_network
 from requests import ReadTimeout
 
+from blockchain_exploration.exploration import (
+    get_explorer_url_for_account,
+    get_explorer_url_for_nft_contract,
+    get_explorer_url_for_token,
+)
+from blockchain_exploration.types import Network, get_label_for_network
+
 if not os.getenv("APP_STAGE"):
-    os.environ[
-        "APP_STAGE"
-    ] = "production"  # This is the environment where the tests most need to pass
+    os.environ["APP_STAGE"] = (
+        "production"  # This is the environment where the tests most need to pass
+    )
 # These paths are defined as environment variables for each service:
 # https://github.com/sweet-io-org/aws-terraform/tree/master/providers/aws/us-east-1/production
 """
