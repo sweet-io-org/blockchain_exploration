@@ -27,6 +27,8 @@ def get_base_path(network: str) -> str:
         result = os.getenv('TEZOS_EXPLORER_BASEPATH', 'https://tzkt.io')
     elif network == Network.SUI:
         result = os.getenv('SUI_EXPLORER_BASEPATH', 'https://suiscan.xyz/mainnet')
+    elif network == Network.TON:
+        result = os.getenv('TON_EXPLORER_BASEPATH', 'https://tonscan.org')
     else:
         raise NotImplementedError(f"Exploration of the {network} network is not supported")
     return result.rstrip('/')
@@ -71,6 +73,8 @@ def get_explorer_url_for_account(network: str, address: str, base_path: Optional
         return f"{base_path}/{address}/operations/"
     elif network == Network.SUI:
         return f"{base_path}/account/{address}"
+    elif network == Network.TON:
+        return f"{base_path}/account/{address}"
     else:
         raise NotImplementedError(f"No explorer URL can be constructed for {network} addresses")
 
@@ -95,6 +99,8 @@ def get_explorer_url_for_token_wallet(network: str, address: str, base_path: Opt
         return f"{base_path}/{address}/tokens"
     elif network == Network.SUI:
         return f"{base_path}/not-implemented/"
+    elif network == Network.TON:
+        return f"{base_path}/{address}#tokens"
     else:
         raise NotImplementedError(f"No explorer URL can be constructed for {network} addresses")
 
@@ -121,6 +127,9 @@ def get_explorer_url_for_nft_contract(network: str, contract_address, base_path:
         return get_explorer_url_for_account(network=network, address=contract_address, base_path=base_path)
     elif network == Network.SUI:
         return f"{base_path}/collection/{contract_address}/items"
+    elif network == Network.TON:
+        # This is a TON jetton contract, not an NFT contract
+        return f"{base_path}/jetton/{contract_address}"
     else:
         raise NotImplementedError(f"Exploration of the {network} network by contract is not supported")
 
@@ -152,6 +161,8 @@ def get_explorer_url_for_token(network: str,
     elif network == Network.SUI:
         # token_id => object_id
         return f"{base_path}/object/{token_id}"
+    elif network == Network.TON:
+        return f"{base_path}/not-implemented/"
     else:
         raise NotImplementedError(f"Exploration of the {network} network is not supported")
 
@@ -192,6 +203,8 @@ def get_explorer_url_for_transaction(network: str, transaction_hash: str, base_p
             return f"{base_path}/{transaction_hash}"
     elif network == Network.SUI:
         return f"{base_path}/tx/{transaction_hash}"
+    elif network == Network.TON:
+        return f"{base_path}/tx/{transaction_hash}"
     else:
         raise NotImplementedError(f"Exploration of the {network} network is not supported")
 
@@ -207,6 +220,8 @@ def get_token_type_by_network(network: str) -> str:
         return TokenType.TEZOS
     elif network == Network.BITCOIN_CASH:
         return TokenType.SLP
+    elif network == Network.TON:
+        return TokenType.SCOR
     else:
         raise NotImplementedError(f"No token type known for {network}")
 
@@ -222,5 +237,9 @@ def get_network_by_token_type(token_type: str) -> str:
         return Network.TEZOS
     elif token_type == TokenType.SLP:
         return Network.BITCOIN_CASH
+    elif token_type == TokenType.TON:
+        return Network.TON
+    elif token_type == TokenType.SCOR:
+        return Network.TON
     else:
         raise NotImplementedError(f"No network known for {token_type}")

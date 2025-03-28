@@ -52,5 +52,19 @@ NETWORK_CURRENCIES: Dict[Any, Dict[str, CryptoCurrency]] = {
             "native_token": True,
             "display_text": "sui",
         }
+    },
+    Network.TON: {
+        "ton": {
+            "symbol": "TON",
+            "code": "ton",
+            "native_token": True,
+            "display_text": "ton",
+        },
+        "scor": {
+            "symbol": "SCOR",
+            "code": "scor",
+            "native_token": False,
+            "display_text": "scor",
+        }
     }
 }
