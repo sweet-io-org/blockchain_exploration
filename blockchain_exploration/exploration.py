@@ -15,21 +15,27 @@ def get_base_path(network: str) -> str:
     # without getting into the minutiae of which specific chain it is.
     if network == Network.BITCOIN_CASH:
         # Another option is bitcoin.com (redirecting to blockchair.com), but it focuses on cash rather than tokens
-        result = os.getenv('SLP_EXPLORER_BASEPATH',
-                         os.getenv('EXPLORER_BASEPATH', 'https://simpleledger.info'))
+        result = os.getenv(
+            "SLP_EXPLORER_BASEPATH",
+            os.getenv("EXPLORER_BASEPATH", "https://simpleledger.info"),
+        )
     elif network == Network.ETHEREUM:
-        result = os.getenv('ETH_EXPLORER_BASEPATH', 'https://etherscan.io')
+        result = os.getenv("ETH_EXPLORER_BASEPATH", "https://etherscan.io")
     elif network == Network.MATIC:
         # Could also be https://opensea.io/assets/matic sometimes
-        result = os.getenv('MATIC_EXPLORER_BASEPATH', 'https://polygonscan.com')
+        result = os.getenv("MATIC_EXPLORER_BASEPATH", "https://polygonscan.com")
     elif network == Network.TEZOS:
         # Could also be https://better-call.dev/
-        result = os.getenv('TEZOS_EXPLORER_BASEPATH', 'https://tzkt.io')
+        result = os.getenv("TEZOS_EXPLORER_BASEPATH", "https://tzkt.io")
     elif network == Network.SUI:
-        result = os.getenv('SUI_EXPLORER_BASEPATH', 'https://suiscan.xyz/mainnet')
+        result = os.getenv("SUI_EXPLORER_BASEPATH", "https://suiscan.xyz/mainnet")
+    elif network == Network.TON:
+        result = os.getenv("TON_EXPLORER_BASEPATH", "https://tonscan.org")
     else:
-        raise NotImplementedError(f"Exploration of the {network} network is not supported")
-    return result.rstrip('/')
+        raise NotImplementedError(
+            f"Exploration of the {network} network is not supported"
+        )
+    return result.rstrip("/")
 
 
 def get_validated_url(url: str) -> str:
@@ -46,20 +52,23 @@ def validated_url(naive_func):
             return get_validated_url(url=result)
         else:
             return result
+
     return validated_func
 
 
 @validated_url
-def get_explorer_url_for_account(network: str, address: str, base_path: Optional[str] = None) -> Optional[str]:
+def get_explorer_url_for_account(
+    network: str, address: str, base_path: Optional[str] = None
+) -> Optional[str]:
     # An account is a place that can hold funds 💰. Use this function for non-NFT contracts too.
     if not address:
         return None
-    base_path = (base_path or get_base_path(network)).rstrip('/')
+    base_path = (base_path or get_base_path(network)).rstrip("/")
     address = address.strip(whitespace)
     if network == Network.BITCOIN_CASH:
         return f"{base_path}/address/{address}"
     elif is_evm_network(network):
-        if base_path.endswith('/opensea.io'):
+        if base_path.endswith("/opensea.io"):
             # https://opensea.io/0xeec4013a607d720989db8f464361cdcf2cb7a7bd
             return f"{base_path}/{address}"
         else:
@@ -71,20 +80,28 @@ def get_explorer_url_for_account(network: str, address: str, base_path: Optional
         return f"{base_path}/{address}/operations/"
     elif network == Network.SUI:
         return f"{base_path}/account/{address}"
+    elif network == Network.TON:
+        return f"{base_path}/account/{address}"
     else:
-        raise NotImplementedError(f"No explorer URL can be constructed for {network} addresses")
+        raise NotImplementedError(
+            f"No explorer URL can be constructed for {network} addresses"
+        )
 
 
 @validated_url
-def get_explorer_url_for_token_wallet(network: str, address: str, base_path: Optional[str] = None) -> str:
+def get_explorer_url_for_token_wallet(
+    network: str, address: str, base_path: Optional[str] = None
+) -> str:
     # A token wallet holds tokens 🪙; and perhaps money
-    base_path = (base_path or get_base_path(network)).rstrip('/')
+    base_path = (base_path or get_base_path(network)).rstrip("/")
     address = address.strip(whitespace)
     if network == Network.BITCOIN_CASH:
         return get_explorer_url_for_account(network, address=address)
     elif is_evm_network(network):
-        address_url = get_explorer_url_for_account(network=network, address=address, base_path=base_path)
-        if base_path.endswith('/opensea.io'):
+        address_url = get_explorer_url_for_account(
+            network=network, address=address, base_path=base_path
+        )
+        if base_path.endswith("/opensea.io"):
             # https://opensea.io/0xeec4013a607d720989db8f464361cdcf2cb7a7bd?search[sortBy]=LISTING_DATE&search[chains][0]=MATIC
             return f"{address_url}?search[sortBy]=LISTING_DATE&search[chains][0]={network.upper()}"
         else:
@@ -95,19 +112,25 @@ def get_explorer_url_for_token_wallet(network: str, address: str, base_path: Opt
         return f"{base_path}/{address}/tokens"
     elif network == Network.SUI:
         return f"{base_path}/not-implemented/"
+    elif network == Network.TON:
+        return f"{base_path}/{address}#tokens"
     else:
-        raise NotImplementedError(f"No explorer URL can be constructed for {network} addresses")
+        raise NotImplementedError(
+            f"No explorer URL can be constructed for {network} addresses"
+        )
 
 
 @validated_url
-def get_explorer_url_for_nft_contract(network: str, contract_address, base_path: Optional[str] = None) -> str:
+def get_explorer_url_for_nft_contract(
+    network: str, contract_address, base_path: Optional[str] = None
+) -> str:
     # A central overview of an NFT contract, hopefully focusing on tokens rather than blockchain implementation details
-    base_path = (base_path or get_base_path(network)).rstrip('/')
+    base_path = (base_path or get_base_path(network)).rstrip("/")
     if network == Network.BITCOIN_CASH:
         # https://simpleledger.info/token/62b2b7bdadbf17685bbdb1827adcec17928baab26cf7d96e3cc27855f741fe63
         return f"{base_path}/token/{contract_address}"
     elif is_evm_network(network):
-        if base_path.endswith('/opensea.io'):
+        if base_path.endswith("/opensea.io"):
             # https://opensea.io/assets?search[query]=0xc4df6018f90f91bad7e24f89279305715b3a276f
             # If we went to https://opensea.io/0xc4df6018f90f91bad7e24f89279305715b3a276f, they'd show us the tokens
             # held by that contract.
@@ -118,42 +141,54 @@ def get_explorer_url_for_nft_contract(network: str, contract_address, base_path:
             return f"{base_path}/token/{contract_address}"
     elif network == Network.TEZOS:
         # https://tzkt.io/KT1RFncfJGBN9heZuDGW5vJPYpMKeYcLeZuo/storage/
-        return get_explorer_url_for_account(network=network, address=contract_address, base_path=base_path)
+        return get_explorer_url_for_account(
+            network=network, address=contract_address, base_path=base_path
+        )
     elif network == Network.SUI:
         return f"{base_path}/collection/{contract_address}/items"
+    elif network == Network.TON:
+        # This is a TON jetton contract, not an NFT contract
+        return f"{base_path}/jetton/{contract_address}"
     else:
-        raise NotImplementedError(f"Exploration of the {network} network by contract is not supported")
+        raise NotImplementedError(
+            f"Exploration of the {network} network by contract is not supported"
+        )
 
 
 @validated_url
-def get_explorer_url_for_token(network: str,
-                               address: str,
-                               token_id: Optional[str],
-                               base_path: Optional[str] = None) -> str:
+def get_explorer_url_for_token(
+    network: str, address: str, token_id: Optional[str], base_path: Optional[str] = None
+) -> str:
     # An individual token 🪙
     # address can be either for a token (BCH) or a contract (EVM, or Tezos)
-    base_path = (base_path or get_base_path(network)).rstrip('/')
+    base_path = (base_path or get_base_path(network)).rstrip("/")
     if network == Network.BITCOIN_CASH:
         # https://simpleledger.info/token/62b2b7bdadbf17685bbdb1827adcec17928baab26cf7d96e3cc27855f741fe63
         return f"{base_path}/token/{address}"
     elif is_evm_network(network):
-        if base_path.endswith('/opensea.io'):
+        if base_path.endswith("/opensea.io"):
             # https://opensea.io/assets/0xc4df6018f90f91bad7e24f89279305715b3a276f/1288
-            return get_explorer_url_for_nft_contract(network=network, contract_address=address,
-                                                     base_path=base_path)
+            return get_explorer_url_for_nft_contract(
+                network=network, contract_address=address, base_path=base_path
+            )
         else:
             # https://polygonscan.com/token/0x3011810abfec25777a01d5fbef08b2ad12860460?a=3191
             return f"{base_path}/token/{address}/?a={token_id}"
     elif network == Network.TEZOS:
         # https://tzkt.io/KT1LHqbTKHKRtTzQAF4Z8KGa1xixQ2266S4w/operations/
         # https://better-call.dev/mainnet/KT1LHqbTKHKRtTzQAF4Z8KGa1xixQ2266S4w/tokens
-        return get_explorer_url_for_nft_contract(network=network, contract_address=address,
-                                                 base_path=base_path)
+        return get_explorer_url_for_nft_contract(
+            network=network, contract_address=address, base_path=base_path
+        )
     elif network == Network.SUI:
         # token_id => object_id
         return f"{base_path}/object/{token_id}"
+    elif network == Network.TON:
+        return f"{base_path}/not-implemented/"
     else:
-        raise NotImplementedError(f"Exploration of the {network} network is not supported")
+        raise NotImplementedError(
+            f"Exploration of the {network} network is not supported"
+        )
 
 
 def is_token_url_supported(network: str) -> bool:
@@ -166,9 +201,11 @@ def is_token_url_supported(network: str) -> bool:
 
 
 @validated_url
-def get_explorer_url_for_transaction(network: str, transaction_hash: str, base_path: Optional[str] = None) -> str:
+def get_explorer_url_for_transaction(
+    network: str, transaction_hash: str, base_path: Optional[str] = None
+) -> str:
     # A blockchain transaction, eg the sending of funds or tokens 🕊
-    base_path = (base_path or get_base_path(network)).rstrip('/')
+    base_path = (base_path or get_base_path(network)).rstrip("/")
     transaction_hash = transaction_hash.strip(whitespace)
     if network == Network.BITCOIN_CASH:
         # https://simpleledger.info/#tx/f63da6fedacb67d7f45fb1aab5663e239e0b09596e670c9e97ced7a80c34c24c
@@ -176,15 +213,19 @@ def get_explorer_url_for_transaction(network: str, transaction_hash: str, base_p
             # https://blockchair.com/bitcoin-cash/transaction/62b2b7bdadbf17685bbdb1827adcec17928baab26cf7d96e3cc27855f741fe63
             return f"{base_path}/#tx/{transaction_hash}"
         else:
-            raise NotImplementedError(f"{network} URLs are not supported for {base_path}")
+            raise NotImplementedError(
+                f"{network} URLs are not supported for {base_path}"
+            )
     elif is_evm_network(network):
-        if base_path.endswith('/opensea.io'):
-            raise NotImplementedError(f"OpenSea does not offer links to individual transactions")
+        if base_path.endswith("/opensea.io"):
+            raise NotImplementedError(
+                f"OpenSea does not offer links to individual transactions"
+            )
         else:
             # https://polygonscan.com/tx/0x1d13a622fd628e0c77ea28805cfe6cfd3c23ab95a13a8ff81a11cb08a17f35a3
             return f"{base_path}/tx/{transaction_hash}"
     elif network == Network.TEZOS:
-        if 'better-call.dev' in base_path:
+        if "better-call.dev" in base_path:
             # https://better-call.dev/mainnet/opg/ooZ2UVPNprv9GfMCwp6JgpUD54G668xrgnkPR2DRCZokfNChDrS/contents
             return f"{base_path}/opg/{transaction_hash}"
         else:
@@ -192,8 +233,12 @@ def get_explorer_url_for_transaction(network: str, transaction_hash: str, base_p
             return f"{base_path}/{transaction_hash}"
     elif network == Network.SUI:
         return f"{base_path}/tx/{transaction_hash}"
+    elif network == Network.TON:
+        return f"{base_path}/tx/{transaction_hash}"
     else:
-        raise NotImplementedError(f"Exploration of the {network} network is not supported")
+        raise NotImplementedError(
+            f"Exploration of the {network} network is not supported"
+        )
 
 
 def get_token_type_by_network(network: str) -> str:
@@ -207,6 +252,8 @@ def get_token_type_by_network(network: str) -> str:
         return TokenType.TEZOS
     elif network == Network.BITCOIN_CASH:
         return TokenType.SLP
+    elif network == Network.TON:
+        return TokenType.SCOR
     else:
         raise NotImplementedError(f"No token type known for {network}")
 
@@ -222,5 +269,9 @@ def get_network_by_token_type(token_type: str) -> str:
         return Network.TEZOS
     elif token_type == TokenType.SLP:
         return Network.BITCOIN_CASH
+    elif token_type == TokenType.TON:
+        return Network.TON
+    elif token_type == TokenType.SCOR:
+        return Network.TON
     else:
         raise NotImplementedError(f"No network known for {token_type}")
