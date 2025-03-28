@@ -56,10 +56,10 @@ NETWORK_CURRENCIES: Dict[Any, Dict[str, CryptoCurrency]] = {
             "display_text": "ton",
         },
         "scor": {
-            "symbol": "$SCOR",
+            "symbol": "SCOR",
             "code": "scor",
             "native_token": False,
-            "display_text": "scor",
+            "display_text": "$SCOR",
         },
     },
 }
