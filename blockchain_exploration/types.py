@@ -7,7 +7,8 @@ class Network:
     TEZOS = "tezos"  # https://tezos.com/
     SUI = "sui"  # https://sui.io/
     TON = "ton"  # https://ton.org/
-
+    BASE = "base"
+    
 
 class TokenType:
     SLP = "slp"
@@ -16,11 +17,11 @@ class TokenType:
     TEZOS = "tezos"
     SUI = "sui"
     TON = "ton"
-    SCOR = "scor"  # TON jetton not nft
+    SCOR = "scor"
 
 
 def is_evm_network(network: str) -> bool:
-    return network in {Network.ETHEREUM, Network.MATIC}
+    return network in {Network.ETHEREUM, Network.MATIC, NETWORK.BASE}
 
 
 def get_label_for_network(network: str) -> str:
