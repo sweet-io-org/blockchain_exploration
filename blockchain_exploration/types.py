@@ -8,7 +8,7 @@ class Network:
     SUI = "sui"  # https://sui.io/
     TON = "ton"  # https://ton.org/
     BASE = "base"
-    
+
 
 class TokenType:
     SLP = "slp"
@@ -21,7 +21,7 @@ class TokenType:
 
 
 def is_evm_network(network: str) -> bool:
-    return network in {Network.ETHEREUM, Network.MATIC, NETWORK.BASE}
+    return network in {Network.ETHEREUM, Network.MATIC, Network.BASE}
 
 
 def get_label_for_network(network: str) -> str:
